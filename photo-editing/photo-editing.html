@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Studio - Osuru Hanumanthu</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    #editorCanvas {
+      border: 2px dashed #ccc;
+      max-width: 100%;
+      border-radius: 0.75rem;
+    }
+    .tool-panel {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800">
+  <header class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 text-center text-3xl font-extrabold shadow-md">
+    📸 Photo Studio by Osuru Hanumanthu
+  </header>
+
+  <main class="p-6 max-w-6xl mx-auto space-y-10">
+    <!-- Image Upload -->
+    <div class="flex flex-col items-center gap-4">
+      <label class="cursor-pointer bg-white border border-gray-300 px-4 py-2 rounded shadow">
+        Upload Image
+        <input type="file" accept="image/*" id="uploadInput" class="hidden" />
+      </label>
+      <canvas id="editorCanvas" width="700" height="500" class="shadow-md"></canvas>
+    </div>
+
+    <!-- Editing Controls -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="tool-panel">
+        <h2 class="font-semibold mb-2">Adjustments</h2>
+        <label>Brightness</label>
+        <input type="range" id="brightness" min="0" max="200" value="100" class="w-full mb-2">
+        <label>Contrast</label>
+        <input type="range" id="contrast" min="0" max="200" value="100" class="w-full mb-2">
+        <label>Saturation</label>
+        <input type="range" id="saturation" min="0" max="200" value="100" class="w-full">
+      </div>
+
+      <div class="tool-panel">
+        <h2 class="font-semibold mb-2">Filters</h2>
+        <div class="flex flex-wrap gap-2">
+          <button class="bg-indigo-500 text-white px-3 py-1 rounded" onclick="applyFilter('vintage')">Vintage</button>
+          <button class="bg-yellow-500 text-white px-3 py-1 rounded" onclick="applyFilter('warm')">Warm</button>
+          <button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="applyFilter('cool')">Cool</button>
+          <button class="bg-gray-500 text-white px-3 py-1 rounded" onclick="resetImage()">Reset</button>
+        </div>
+      </div>
+
+      <div class="tool-panel text-center">
+        <h2 class="font-semibold mb-2">Export</h2>
+        <button class="bg-green-600 text-white px-6 py-2 rounded shadow" onclick="saveImage()">Save Image</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-sm text-gray-500 p-4">
+    Inspired by Lightroom • VSCO • Picsart
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('editorCanvas');
+    const ctx = canvas.getContext('2d');
+    let originalImage = new Image();
+
+    document.getElementById('uploadInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        originalImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    originalImage.onload = function () {
+      canvas.width = originalImage.width;
+      canvas.height = originalImage.height;
+      ctx.drawImage(originalImage, 0, 0);
+    };
+
+    function applyFilter(type) {
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        if (type === 'vintage') {
+          data[i] *= 1.1;
+          data[i + 1] *= 0.9;
+          data[i + 2] *= 0.7;
+        } else if (type === 'warm') {
+          data[i] += 20;
+          data[i + 2] -= 20;
+        } else if (type === 'cool') {
+          data[i] -= 20;
+          data[i + 2] += 20;
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    function resetImage() {
+      ctx.drawImage(originalImage, 0, 0);
+    }
+
+    function saveImage() {
+      const link = document.createElement('a');
+      link.download = 'edited-image.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    ['brightness', 'contrast', 'saturation'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        ctx.filter = `brightness(${brightness.value}%) contrast(${contrast.value}%) saturate(${saturation.value}%)`;
+        ctx.drawImage(originalImage, 0, 0);
+      });
+    });
+  </script>
+</body>
+</html>

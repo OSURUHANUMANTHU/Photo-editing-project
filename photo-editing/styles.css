@@ -1,0 +1,68 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    width: 50px;
+    margin-right: 15px;
+}
+
+.toolbar {
+    margin: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+button {
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #007bff;
+    color: white;
+}
+
+button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+canvas {
+    border: 2px solid black;
+    margin-top: 10px;
+    width: 80%;
+    height: auto;
+}
+
+input[type="file"] {
+    margin-top: 10px;
+}
